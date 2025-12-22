@@ -12,7 +12,7 @@ void print_help() {
     printf("Operations:\n");
     printf("    + addition\n");
     printf("    - subtraction\n");
-    printf("    * multiplication\n");
+    printf("    x multiplication\n");
     printf("    / division\n");
     printf("    ^ power\n");
     printf("    ! factorial\n");
@@ -45,7 +45,7 @@ int main(int argc, char *argv[]) {
             result = add(a, b);
         } else if (strcmp(op, "-") == 0) {
             result = sub(a, b);
-        } else if (strcmp(op, "*") == 0) {
+        } else if (strcmp(op, "x") == 0) {
             result = mul(a, b);
         } else if (strcmp(op, "/") == 0) {
             int error{};
