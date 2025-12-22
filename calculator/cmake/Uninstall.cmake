@@ -1,0 +1,14 @@
+if (NOT EXISTS "@CMAKE_BINARY_DIR@/install_manifest.txt")
+    message(FATAL_ERROR "Cannot find install_manifest.txt")
+endif()
+
+file(READ "@CMAKE_BINARY_DIR@/install_manifest.txt" files)
+
+string(REPLACE "\n" ";" files "${files}")
+
+foreach (file ${files})
+    message(STATUS "Removing ${file}")
+    execute_process(
+        COMMAND sudo rm -f ${file}
+    )
+endforeach()

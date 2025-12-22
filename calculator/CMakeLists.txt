@@ -45,3 +45,14 @@ install(FILES mathlib/mathlib.h
 )
 
 include(cmake/ClangFormat.cmake)
+
+configure_file(
+    ${CMAKE_SOURCE_DIR}/cmake/Uninstall.cmake
+    ${CMAKE_BINARY_DIR}/cmake_uninstall.cmake
+    IMMEDIATE
+    @ONLY
+)
+
+add_custom_target(uninstall
+    COMMAND ${CMAKE_COMMAND} -P ${CMAKE_BINARY_DIR}/cmake_uninstall.cmake
+)
