@@ -6,13 +6,9 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-find_program(CLANG_TIDY_EXE NAMES clang-tidy)
-if(CLANG_TIDY_EXE)
-    set(CMAKE_CXX_CLANG_TIDY
-        ${CLANG_TIDY_EXE};
-        -warnings-as-errors=*
-    )
-endif()
+include(cmake/ClangTidy.cmake)
+include(cmake/CompilerWarnings.cmake)
+include(cmake/ClangFormat.cmake)
 
 add_library(mathlib STATIC
     mathlib/mathlib.cpp
@@ -23,6 +19,8 @@ target_include_directories(mathlib
         ${CMAKE_CURRENT_SOURCE_DIR/mathlib}
 )
 
+enable_warnings(mathlib)
+
 add_executable(calculator
     app/main.cpp
 )
@@ -31,6 +29,8 @@ target_link_libraries(calculator
     PRIVATE
         mathlib
 )
+
+enable_warnings(calculator)
 
 install(TARGETS calculator
     RUNTIME DESTINATION bin
@@ -43,8 +43,6 @@ install(TARGETS mathlib
 install(FILES mathlib/mathlib.h
     DESTINATION include
 )
-
-include(cmake/ClangFormat.cmake)
 
 configure_file(
     ${CMAKE_SOURCE_DIR}/cmake/Uninstall.cmake
