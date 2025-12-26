@@ -10,16 +10,15 @@ include(cmake/ClangTidy.cmake)
 include(cmake/CompilerWarnings.cmake)
 include(cmake/ClangFormat.cmake)
 
-add_library(mathlib STATIC
-    mathlib/mathlib.cpp
+include(FetchContent)
+
+FetchContent_Declare(
+    mathlib
+    GIT_REPOSITORY https://github.com/SemenutaEgor/mathlib.git
+    GIT_TAG v1.0.1
 )
 
-target_include_directories(mathlib
-    PUBLIC
-        ${CMAKE_CURRENT_SOURCE_DIR/mathlib}
-)
-
-enable_warnings(mathlib)
+FetchContent_MakeAvailable(mathlib)
 
 add_executable(calculator
     app/main.cpp
