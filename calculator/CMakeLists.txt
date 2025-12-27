@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.16)
 project(calculator VERSION 1.0 LANGUAGES  CXX)
 
 set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_STANDARD_REQUIRED  ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 include(cmake/ClangTidy.cmake)
@@ -20,27 +20,49 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(mathlib)
 
+add_library(calculator_core
+    src/core/calculator.cpp
+)
+
+target_include_directories(calculator_core
+    PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}
+        ${CMAKE_CURRENT_SOURCE_DIR}/src
+)
+
+target_link_libraries(calculator_core
+    PRIVATE
+        mathlib
+)
+
+enable_warnings(calculator_core)
+
+add_library(calculator_cli
+    src/cli/cli.cpp
+)
+
+target_include_directories(calculator_cli
+    PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}
+        ${CMAKE_CURRENT_SOURCE_DIR}/src
+)
+
+enable_warnings(calculator_cli)
+
 add_executable(calculator
-    app/main.cpp
+    src/main.cpp
 )
 
 target_link_libraries(calculator
     PRIVATE
-        mathlib
+        calculator_core
+        calculator_cli
 )
 
 enable_warnings(calculator)
 
 install(TARGETS calculator
     RUNTIME DESTINATION bin
-)
-
-install(TARGETS mathlib
-    ARCHIVE DESTINATION lib
-)
-
-install(FILES mathlib/mathlib.h
-    DESTINATION include
 )
 
 configure_file(
