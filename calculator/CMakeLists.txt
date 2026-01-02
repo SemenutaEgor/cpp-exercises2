@@ -21,8 +21,14 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(mathlib)
 
 add_library(calculator_core
-    src/core/calculator.cpp
+    src/core/Runner.cpp
+    src/core/Parser.cpp
+    src/core/Checker.cpp
+    src/core/Calculator.cpp
+    src/core/Printer.cpp
+    src/logging/Logger.cpp
 )
+
 
 target_include_directories(calculator_core
     PUBLIC
@@ -37,18 +43,6 @@ target_link_libraries(calculator_core
 
 enable_warnings(calculator_core)
 
-add_library(calculator_cli
-    src/cli/cli.cpp
-)
-
-target_include_directories(calculator_cli
-    PUBLIC
-        ${CMAKE_CURRENT_SOURCE_DIR}
-        ${CMAKE_CURRENT_SOURCE_DIR}/src
-)
-
-enable_warnings(calculator_cli)
-
 add_executable(calculator
     src/main.cpp
 )
@@ -56,7 +50,6 @@ add_executable(calculator
 target_link_libraries(calculator
     PRIVATE
         calculator_core
-        calculator_cli
 )
 
 enable_warnings(calculator)
