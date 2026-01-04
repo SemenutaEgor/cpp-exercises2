@@ -2,4 +2,8 @@
 
 #include <ostream>
 
-void Printer::print(const Result&, std::ostream& out) { out << "0\n"; }
+#include "Result.h"
+
+void Printer::print(const Result& result, std::ostream& out) {
+  out << result.value() << '\n';
+}

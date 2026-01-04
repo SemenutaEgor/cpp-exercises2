@@ -1,7 +1,8 @@
 #pragma once
 
+#include "Result.h"
+
 class Request;
-class Result;
 
 class Calculator {
  public:
