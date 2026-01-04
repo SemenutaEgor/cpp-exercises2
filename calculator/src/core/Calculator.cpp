@@ -1,5 +1,8 @@
 #include "Calculator.h"
 
+#include "Errors.h"
 #include "Result.h"
 
-Result Calculator::calculate(const Request&) { return Result(0); }
+Result Calculator::calculate(const Request&) {
+  throw CalculationError("calculation not implemented");
+}
