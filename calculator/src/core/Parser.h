@@ -2,7 +2,7 @@
 
 #include <iosfwd>
 
-class Request;
+#include "Request.h"
 
 class Parser {
  public:

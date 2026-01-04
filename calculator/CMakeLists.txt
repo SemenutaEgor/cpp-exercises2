@@ -20,6 +20,14 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(mathlib)
 
+FetchContent_Declare(
+    nlohmann_json
+    GIT_REPOSITORY https://github.com/nlohmann/json.git
+    GIT_TAG v3.11.3
+)
+
+FetchContent_MakeAvailable(nlohmann_json)
+
 add_library(calculator_core
     src/core/Runner.cpp
     src/core/Parser.cpp
@@ -39,6 +47,7 @@ target_include_directories(calculator_core
 target_link_libraries(calculator_core
     PRIVATE
         mathlib
+        nlohmann_json::nlohmann_json
 )
 
 enable_warnings(calculator_core)
