@@ -6,6 +6,7 @@
 
 #include "Errors.h"
 #include "Request.h"
+#include "logging/Logger.h"
 
 Result Calculator::calculate(const Request& request) {
   const std::string& op = request.operation();
@@ -38,11 +39,13 @@ Result Calculator::calculate(const Request& request) {
     bool ok = mathlib::fact(args[0], &value);
 
     if (!ok) {
+      Logger::instance().error("Calculation failed: {}");
       throw CalculationError("factorial overflow");
     }
 
     return Result(value);
   }
 
+  Logger::instance().error("Calculation failed: {}");
   throw CalculationError("unsupported operation: " + op);
 }

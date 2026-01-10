@@ -4,19 +4,23 @@
 #include <nlohmann/json.hpp>
 
 #include "Errors.h"
+#include "logging/Logger.h"
 
 using nlohmann::json;
 
 Request Parser::parse(std::istream& in) {
   try {
+    Logger::instance().debug("Parsing input");
     json j;
     in >> j;
 
     if (!j.contains("operation") || !j["operation"].is_string()) {
+      Logger::instance().error("Parsing failed");
       throw ParseError("field 'operation' is missing or not a string");
     }
 
     if (!j.contains("args") || !j["args"].is_array()) {
+      Logger::instance().error("Parsing failed");
       throw ParseError("field 'args' is missing or not an array");
     }
 
@@ -25,6 +29,7 @@ Request Parser::parse(std::istream& in) {
     std::vector<int> args;
     for (const auto& el : j["args"]) {
       if (!el.is_number_integer()) {
+        Logger::instance().error("Parsing failed");
         throw ParseError("all elements of 'args' must be integers");
       }
       args.push_back(el.get<int>());
@@ -32,6 +37,7 @@ Request Parser::parse(std::istream& in) {
 
     return Request(operation, args);
   } catch (const json::exception& e) {
+    Logger::instance().error("Parsing failed");
     throw ParseError(e.what());
   }
 }
