@@ -1,7 +1,5 @@
 add_executable(calculator_tests
-    test_parser.cpp
-    test_checker.cpp
-    test_calculator.cpp
+    test_runner_inout.cpp
 )
 
 target_link_libraries(calculator_tests
