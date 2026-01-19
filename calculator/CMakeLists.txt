@@ -50,6 +50,7 @@ target_link_libraries(calculator_core
         nlohmann_json::nlohmann_json
 )
 
+enable_clang_tidy(calculator_core)
 enable_warnings(calculator_core)
 
 add_executable(calculator
@@ -61,6 +62,7 @@ target_link_libraries(calculator
         calculator_core
 )
 
+enable_clang_tidy(calculator)
 enable_warnings(calculator)
 
 install(TARGETS calculator
