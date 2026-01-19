@@ -2,9 +2,10 @@
 
 #include <iosfwd>
 
+class Request;
 class Result;
 
 class Printer {
  public:
-  void print(const Result&, std::ostream&);
+  void print(const Request&, const Result&, std::ostream&);
 };

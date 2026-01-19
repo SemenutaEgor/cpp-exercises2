@@ -3,22 +3,25 @@
 #include <string>
 
 #include "Errors.h"
+#include "Operations.h"
 #include "Request.h"
 #include "logging/Logger.h"
 
 void Checker::validate(const Request& request) {
   Logger::instance().debug("Validating request");
-  const std::string& op = request.operation();
+  const std::string& opStr = request.operation();
+  const auto op = opFromString(opStr);
   const auto& args = request.args();
 
-  if (op == "add" || op == "sub" || op == "mul" || op == "div" || op == "pow") {
+  if (op == OpType::ADD || op == OpType::SUB || op == OpType::MUL ||
+      op == OpType::DIV || op == OpType::POW) {
     if (args.size() != 2) {
       Logger::instance().error("Validation failed: {}");
-      throw ValidationError("operation '" + op +
+      throw ValidationError("operation '" + opStr +
                             "' requires exactly 2 arguments");
     }
 
-    if (op == "div" && args[1] == 0) {
+    if (op == OpType::DIV && args[1] == 0) {
       Logger::instance().error("Validation failed: {}");
       throw ValidationError("division by zero");
     }
@@ -26,7 +29,7 @@ void Checker::validate(const Request& request) {
     return;
   }
 
-  if (op == "fact") {
+  if (op == OpType::FACT) {
     if (args.size() != 1) {
       Logger::instance().error("Validation failed: {}");
       throw ValidationError("operation 'fact' requires exactly 1 argument");
@@ -41,5 +44,5 @@ void Checker::validate(const Request& request) {
   }
 
   Logger::instance().error("Validation failed: {}");
-  throw ValidationError("unknown operation: " + op);
+  throw ValidationError("unknown operation: " + opStr);
 }

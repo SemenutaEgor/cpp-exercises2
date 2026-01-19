@@ -3,27 +3,17 @@
 #include <istream>
 #include <ostream>
 
-#include "Calculator.h"
-#include "Checker.h"
 #include "Errors.h"
-#include "Parser.h"
-#include "Printer.h"
-#include "Request.h"
-#include "Result.h"
 #include "logging/Logger.h"
 
-int Runner::run(std::istream& in, std::ostream& out, std::ostream& err) {
-  Parser parser;
-  Checker checker;
-  Calculator calculator;
-  Printer printer;
-
+int Runner::run(std::istream& in, std::ostream& out,
+                std::ostream& err) noexcept {
   try {
     Logger::instance().info("Application started");
-    auto request = parser.parse(in);
-    checker.validate(request);
-    auto result = calculator.calculate(request);
-    printer.print(result, out);
+    auto request = parser_.parse(in);
+    checker_.validate(request);
+    auto result = calculator_.calculate(request);
+    printer_.print(request, result, out);
     Logger::instance().info("Application finished successfully");
     return 0;
   } catch (const AppError& e) {
