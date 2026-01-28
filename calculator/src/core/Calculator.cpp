@@ -19,7 +19,6 @@ Result Calculator::calculate(const Request& request) {
       return Result(mathlib::add(args[0], args[1]));
     case OpType::SUB:
       return Result(mathlib::sub(args[0], args[1]));
-      break;
     case OpType::MUL:
       return Result(mathlib::mul(args[0], args[1]));
     case OpType::DIV: {
@@ -34,14 +33,14 @@ Result Calculator::calculate(const Request& request) {
       bool ok = mathlib::fact(args[0], &value);
 
       if (!ok) {
-        Logger::instance().error("Calculation failed: {}");
+        Logger::instance().error("Calculation failed: factorial overflow");
         throw CalculationError("factorial overflow");
       }
 
       return Result(value);
     }
     default:
-      Logger::instance().error("Calculation failed: {}");
+      Logger::instance().error("Calculation failed: unsupported operation");
       throw CalculationError("unsupported operation: " + opStr);
   }
 }
