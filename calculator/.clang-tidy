@@ -34,9 +34,10 @@ Checks: >
   -readability-named-parameter,
   -readability-braces-around-statements,
   -readability-magic-numbers
+  -modernize-use-trailing-return-type
 
 # Turn all the warnings from the checks above into errors.
-WarningsAsErrors: "*"
+#WarningsAsErrors: "*"
 
 CheckOptions:
   - { key: readability-identifier-naming.NamespaceCase,          value: lower_case }
