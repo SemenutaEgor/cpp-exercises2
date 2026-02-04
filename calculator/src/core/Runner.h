@@ -2,15 +2,12 @@
 
 #include <iosfwd>
 
+#include "../storage/Cache.h"
+#include "../storage/CachedExecutor.h"
 #include "Calculator.h"
 #include "Checker.h"
 #include "Parser.h"
 #include "Printer.h"
-
-class Calculator;
-class Checker;
-class Parser;
-class Printer;
 
 class Runner {
  public:
@@ -21,4 +18,6 @@ class Runner {
   Checker checker_;
   Calculator calculator_;
   Printer printer_;
+  Cache cache_;
+  CachedExecutor executor_{cache_};
 };
