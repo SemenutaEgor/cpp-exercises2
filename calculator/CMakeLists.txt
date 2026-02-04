@@ -35,6 +35,7 @@ add_library(calculator_core
     src/core/Calculator.cpp
     src/core/Printer.cpp
     src/logging/Logger.cpp
+    src/storage/CachedExecutor.cpp
 )
 
 
