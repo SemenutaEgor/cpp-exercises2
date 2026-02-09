@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.16)
 
 project(calculator VERSION 1.0 LANGUAGES  CXX)
 
+find_package(PostgreSQL REQUIRED)
+
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED  ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
@@ -36,6 +38,7 @@ add_library(calculator_core
     src/core/Printer.cpp
     src/logging/Logger.cpp
     src/storage/CachedExecutor.cpp
+    src/db/PgConn.cpp
 )
 
 
@@ -49,6 +52,8 @@ target_link_libraries(calculator_core
     PRIVATE
         mathlib
         nlohmann_json::nlohmann_json
+        spdlog::spdlog
+        PostgreSQL::PostgreSQL
 )
 
 enable_clang_tidy(calculator_core)
@@ -102,8 +107,3 @@ FetchContent_Declare(
 )
 
 FetchContent_MakeAvailable(spdlog)
-
-target_link_libraries(calculator_core
-    PRIVATE
-        spdlog::spdlog
-)
