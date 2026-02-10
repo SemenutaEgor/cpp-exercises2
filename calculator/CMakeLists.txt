@@ -39,6 +39,7 @@ add_library(calculator_core
     src/logging/Logger.cpp
     src/storage/CachedExecutor.cpp
     src/db/PgConn.cpp
+    src/storage/PgStorage.cpp
 )
 
 

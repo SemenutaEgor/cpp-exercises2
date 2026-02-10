@@ -42,3 +42,28 @@ PgResult PgConn::exec(const std::string& sql) {
   }
   return PgResult(res);
 }
+
+PgResult PgConn::execParams(
+    const std::string& sql,
+    const std::vector<std::optional<std::string>>& params) {
+  std::vector<const char*> values;
+  values.reserve(params.size());
+
+  for (const auto& p : params) {
+    if (p.has_value()) {
+      values.push_back(p->c_str());
+    } else {
+      values.push_back(nullptr);
+    }
+  }
+
+  PGresult* res =
+      PQexecParams(conn_, sql.c_str(), static_cast<int>(values.size()), nullptr,
+                   values.data(), nullptr, nullptr, 0);
+
+  if (!res) {
+    throw PgError(PQerrorMessage(conn_));
+  }
+
+  return PgResult(res);
+}
