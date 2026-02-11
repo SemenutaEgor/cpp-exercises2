@@ -2,54 +2,43 @@
 
 #include <istream>
 #include <ostream>
+#include <string>
 
+#include "../db/PgConn.h"
+#include "../storage/CachedExecutor.h"
+#include "../storage/PgStorage.h"
 #include "Errors.h"
 #include "logging/Logger.h"
 
-#include "db/PgConn.h" // test
-#include "storage/PgStorage.h" // test
+Runner::Runner() {
+  const std::string conninfo =
+      "host=localhost dbname=calculator user=calc_user password=calc_pass";
+  
+  conn_ = std::make_unique<PgConn>(conninfo);
+  storage_ = std::make_unique<PgStorage>(*conn_);
+  executor_ = std::make_unique<CachedExecutor>(cache_, *storage_);
+}
+
+Runner::~Runner() = default;
 
 int Runner::run(std::istream& in, std::ostream& out,
                 std::ostream& err) noexcept {
   try {
     Logger::instance().info("Application started");
 
-    // test
-    PgConn conn("host=localhost dbname=calculator user=calc_user password=calc_pass");
+    executor_->warmup();
 
-    auto res = conn.execParams("SELECT $1::int + $2::int",
-                               {std::string("10"), std::string("3")});
-    Logger::instance().info(std::string("sum=") + res.value(0, 0));
-
-    PgStorage storage(conn);
-    auto rowsBefore = storage.loadAll();
-
-    Logger::instance().info(std::string("rows before=") + std::to_string(rowsBefore.size()));
-
-    OperationKey key;
-    key.op = OpType::ADD;
-    key.args = {10, 3};
-    normalize(key);
-
-    Logger::instance().info(
-        "upsert key: op=" + std::to_string(static_cast<int>(key.op)) +
-        " argc=" + std::to_string(key.args.size()) + " a=" +
-        std::to_string(key.args[0]) + " b=" + std::to_string(key.args[1]));
-
-    storage.upsert(key, 222);
-    Logger::instance().info("upsert done");
-
-    auto rowsAfter = storage.loadAll();
-    Logger::instance().info(std::string("rows after=") + std::to_string(rowsAfter.size()));
-
-    auto check = conn.execParams(
-        "SELECT result FROM calc_history WHERE op=$1 AND argc=$2 AND a=$3 AND "
-        "b=$4",
-        {std::to_string(static_cast<int>(key.op)),
-         std::to_string(static_cast<int>(key.args.size())),
-         std::to_string(key.args[0]), std::to_string(key.args[1])});
-
-    Logger::instance().info(std::string("db_result=") + check.value(0, 0));
+    while (true) {
+      try {
+        auto request = parser_.parse(in);
+        checker_.validate(request);
+        auto result = executor_->execute(request, calculator_);
+        printer_.print(request, result, out);
+      } catch (const AppError&) {
+        if (in.eof()) break;
+        throw;
+      }
+    }
 
     Logger::instance().info("Application finished successfully");
     return 0;
