@@ -13,7 +13,7 @@ TEST(InOutTest, AddSuccess) {
 
   EXPECT_EQ(code, 0);
   EXPECT_EQ(err.str(), "");
-  EXPECT_EQ(out.str(), "3\n");
+  EXPECT_EQ(out.str(), "1 + 2 = 3\n");
 }
 
 TEST(InOutTest, FactorialSuccess) {
@@ -24,7 +24,7 @@ TEST(InOutTest, FactorialSuccess) {
   int code = r.run(in, out, err);
 
   EXPECT_EQ(code, 0);
-  EXPECT_EQ(out.str(), "120\n");
+  EXPECT_EQ(out.str(), "5 ! = 120\n");
 }
 
 TEST(InOutTest, ParseErrorInvalidJson) {

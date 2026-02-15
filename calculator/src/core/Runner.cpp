@@ -29,15 +29,14 @@ int Runner::run(std::istream& in, std::ostream& out,
     executor_->warmup();
 
     while (true) {
-      try {
-        auto request = parser_.parse(in);
-        checker_.validate(request);
-        auto result = executor_->execute(request, calculator_);
-        printer_.print(request, result, out);
-      } catch (const AppError&) {
-        if (in.eof()) break;
-        throw;
+      if (in.peek() == std::char_traits<char>::eof()) {
+        break;
       }
+
+      auto request = parser_.parse(in);
+      checker_.validate(request);
+      auto result = executor_->execute(request, calculator_);
+      printer_.print(request, result, out);
     }
 
     Logger::instance().info("Application finished successfully");
