@@ -29,6 +29,7 @@ int Runner::run(std::istream& in, std::ostream& out,
     executor_->warmup();
 
     while (true) {
+      in >> std::ws;
       if (in.peek() == std::char_traits<char>::eof()) {
         break;
       }
