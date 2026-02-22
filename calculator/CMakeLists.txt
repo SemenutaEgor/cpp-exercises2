@@ -40,6 +40,7 @@ add_library(calculator_core
     src/storage/CachedExecutor.cpp
     src/db/PgConn.cpp
     src/storage/PgStorage.cpp
+    src/db/DbContext.cpp
 )
 
 
@@ -50,11 +51,12 @@ target_include_directories(calculator_core
 )
 
 target_link_libraries(calculator_core
+    PUBLIC
+        PostgreSQL::PostgreSQL
     PRIVATE
         mathlib
         nlohmann_json::nlohmann_json
         spdlog::spdlog
-        PostgreSQL::PostgreSQL
 )
 
 enable_clang_tidy(calculator_core)

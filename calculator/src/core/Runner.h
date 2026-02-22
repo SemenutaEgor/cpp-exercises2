@@ -1,9 +1,11 @@
 #pragma once
 
 #include <iosfwd>
-#include <memory>
+#include <string>
 
+#include "../db/DbContext.h"
 #include "../storage/Cache.h"
+#include "../storage/CachedExecutor.h"
 #include "Calculator.h"
 #include "Checker.h"
 #include "Parser.h"
@@ -11,7 +13,6 @@
 
 class PgConn;
 class PgStorage;
-class CachedExecutor;
 
 class Runner {
  public:
@@ -25,7 +26,7 @@ class Runner {
   Calculator calculator_;
   Printer printer_;
   Cache cache_;
-  std::unique_ptr<PgConn> conn_;
-  std::unique_ptr<PgStorage> storage_;
-  std::unique_ptr<CachedExecutor> executor_;
+
+  DbContext db_;
+  CachedExecutor executor_;
 };

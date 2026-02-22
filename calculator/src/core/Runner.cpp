@@ -2,22 +2,15 @@
 
 #include <istream>
 #include <ostream>
-#include <string>
 
 #include "../db/PgConn.h"
-#include "../storage/CachedExecutor.h"
 #include "../storage/PgStorage.h"
 #include "Errors.h"
 #include "logging/Logger.h"
 
-Runner::Runner() {
-  const std::string conninfo =
-      "host=localhost dbname=calculator user=calc_user password=calc_pass";
-  
-  conn_ = std::make_unique<PgConn>(conninfo);
-  storage_ = std::make_unique<PgStorage>(*conn_);
-  executor_ = std::make_unique<CachedExecutor>(cache_, *storage_);
-}
+Runner::Runner()
+    : db_("host=localhost dbname=calculator user=calc_user password=calc_pass"),
+      executor_(cache_, db_.storage()) {}
 
 Runner::~Runner() = default;
 
@@ -26,7 +19,7 @@ int Runner::run(std::istream& in, std::ostream& out,
   try {
     Logger::instance().info("Application started");
 
-    executor_->warmup();
+    executor_.warmup();
 
     while (true) {
       in >> std::ws;
@@ -36,7 +29,7 @@ int Runner::run(std::istream& in, std::ostream& out,
 
       auto request = parser_.parse(in);
       checker_.validate(request);
-      auto result = executor_->execute(request, calculator_);
+      auto result = executor_.execute(request, calculator_);
       printer_.print(request, result, out);
     }
 
