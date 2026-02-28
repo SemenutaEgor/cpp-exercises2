@@ -7,6 +7,7 @@
 #include "Errors.h"
 #include "Operations.h"
 #include "Request.h"
+#include "Result.h"
 #include "logging/Logger.h"
 
 Result Calculator::calculate(const Request& request) {

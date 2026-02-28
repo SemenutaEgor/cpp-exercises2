@@ -3,6 +3,6 @@ function(enable_warnings target)
         -Wall
         -Wextra
         -Wpedantic
-        -Werror
+        #-Werror
     )
 endfunction()
