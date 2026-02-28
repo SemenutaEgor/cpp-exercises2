@@ -21,6 +21,9 @@ class Runner {
   int run(std::istream&, std::ostream&, std::ostream&) noexcept;
 
  private:
+  bool processOne(std::istream& in, std::ostream& out);
+
+ private:
   Parser parser_;
   Checker checker_;
   Calculator calculator_;
