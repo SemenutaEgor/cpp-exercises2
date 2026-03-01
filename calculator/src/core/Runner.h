@@ -20,6 +20,8 @@ class Runner {
   ~Runner();
   int run(std::istream&, std::ostream&, std::ostream&) noexcept;
 
+  std::string processLine(const std::string& line);
+
  private:
   bool processOne(std::istream& in, std::ostream& out);
 

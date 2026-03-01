@@ -1,10 +1,13 @@
 #pragma once
 
+#include <functional>
 #include <boost/asio.hpp>
 
 class TcpServer {
  public:
-  TcpServer(boost::asio::io_context& io, unsigned short port);
+  using RequestHandler = std::function<std::string(const std::string&)>;
+
+  TcpServer(boost::asio::io_context&, unsigned short, RequestHandler);
 
   void start();
   void stop();
@@ -14,4 +17,5 @@ class TcpServer {
 
   boost::asio::io_context& io_;
   boost::asio::ip::tcp::acceptor acceptor_;
+  RequestHandler handler_;
 };

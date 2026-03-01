@@ -22,7 +22,8 @@ int Runner::run(std::istream& in, std::ostream& out,
 
     executor_.warmup();
 
-    while (processOne(in, out)) {}
+    while (processOne(in, out)) {
+    }
 
     Logger::instance().info("Application finished successfully");
     return 0;
@@ -37,22 +38,49 @@ int Runner::run(std::istream& in, std::ostream& out,
   }
 }
 
+std::string Runner::processLine(const std::string& line) {
+  try {
+    if (line.find_first_not_of(" \t\r\n") == std::string::npos) {
+      return "";
+    }
+
+    std::string trimmed = line;
+    if (!trimmed.empty() && trimmed.back() == '\r') {
+      trimmed.pop_back();
+    }
+
+    std::istringstream iss(trimmed);
+    std::ostringstream oss;
+
+    auto request = parser_.parse(iss);
+    checker_.validate(request);
+    auto result = executor_.execute(request, calculator_);
+    printer_.print(request, result, oss);
+
+    return oss.str();
+  } catch (const AppError& e) {
+    return std::string("error: ") + e.what();
+  } catch (const std::exception& e) {
+    return std::string("internal error: ") + e.what();
+  }
+}
+
 bool Runner::processOne(std::istream& in, std::ostream& out) {
- std::string line;
- if (!std::getline(in, line)) {
-  return false;
- }
+  std::string line;
+  if (!std::getline(in, line)) {
+    return false;
+  }
 
- if (line.find_first_not_of(" \t\r\n") == std::string::npos) {
+  if (line.find_first_not_of(" \t\r\n") == std::string::npos) {
+    return true;
+  }
+
+  std::istringstream iss(line);
+
+  auto request = parser_.parse(iss);
+  checker_.validate(request);
+  auto result = executor_.execute(request, calculator_);
+  printer_.print(request, result, out);
+
   return true;
- }
-
- std::istringstream iss(line);
-
- auto request = parser_.parse(iss);
- checker_.validate(request);
- auto result = executor_.execute(request, calculator_);
- printer_.print(request, result, out);
-
- return true;
 }

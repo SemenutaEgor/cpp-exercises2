@@ -9,7 +9,8 @@ using asio::ip::tcp;
 
 namespace {
 struct Session : std::enable_shared_from_this<Session> {
-  explicit Session(tcp::socket socket) : socket_(std::move(socket)) {}
+  explicit Session(tcp::socket socket, TcpServer::RequestHandler handler)
+      : socket_(std::move(socket)), handler_(std::move(handler)) {}
 
   void start() { do_read(); }
 
@@ -32,7 +33,8 @@ struct Session : std::enable_shared_from_this<Session> {
             line.pop_back();
           }
 
-          self->response_ = "OK\n";
+          self->response_ = self->handler_(line);
+          self->response_ += "\n";
           self->do_write();
         });
   }
@@ -54,11 +56,13 @@ struct Session : std::enable_shared_from_this<Session> {
   tcp::socket socket_;
   asio::streambuf buffer_;
   std::string response_;
+  TcpServer::RequestHandler handler_;
 };
 }  // namespace
 
-TcpServer::TcpServer(asio::io_context& io, unsigned short port)
-    : io_(io), acceptor_(io) {
+TcpServer::TcpServer(asio::io_context& io, unsigned short port,
+                     RequestHandler handler)
+    : io_(io), acceptor_(io), handler_(std::move(handler)) {
   tcp::endpoint ep(tcp::v4(), port);
   acceptor_.open(ep.protocol());
   acceptor_.set_option(tcp::acceptor::reuse_address(true));
@@ -77,7 +81,7 @@ void TcpServer::do_accept() {
   acceptor_.async_accept(
       [this](const boost::system::error_code& ec, tcp::socket socket) {
         if (!ec) {
-          std::make_shared<Session>(std::move(socket))->start();
+          std::make_shared<Session>(std::move(socket), handler_)->start();
         }
 
         if (acceptor_.is_open()) {

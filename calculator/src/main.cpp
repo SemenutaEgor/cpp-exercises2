@@ -24,8 +24,16 @@ int main() {
    return 1;
   }
 
+  Runner runner;
+
   boost::asio::io_context io;
-  TcpServer server(io, 5555);
+  TcpServer server(io, 5555, [&](const std::string& line) -> std::string {
+    auto ans = runner.processLine(line);
+    if (ans.empty()) return "\n";
+    if (ans.back() != '\n') ans.push_back('\n');
+    return ans;
+  });
+  
   server.start();
 
   std::thread io_thread([&]{
@@ -46,7 +54,4 @@ int main() {
 
   std::cout << "Graceful shutdown\n";
   return 0;
-
-  // Runner runner;
-  // return runner.run(std::cin, std::cout, std::cerr);
 }
