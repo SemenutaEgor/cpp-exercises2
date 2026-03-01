@@ -6,6 +6,9 @@
 #include <iostream>
 #include <thread>
 
+#include <boost/asio.hpp>
+#include "net/TcpServer.h"
+
 #include "core/Runner.h"
 
 int main() {
@@ -16,22 +19,31 @@ int main() {
   sigaddset(&set, SIGINT);
   sigaddset(&set, SIGTERM);
 
-  pthread_sigmask(SIG_BLOCK, &set, nullptr);
+  if (pthread_sigmask(SIG_BLOCK, &set, nullptr) != 0) {
+   std::cerr << "pthread_sigmask failed\n";
+   return 1;
+  }
+
+  boost::asio::io_context io;
+  TcpServer server(io, 5555);
+  server.start();
+
+  std::thread io_thread([&]{
+   io.run();
+  });
 
   std::thread signalThread([&](){
    int sig = 0;
    sigwait(&set, &sig);
-   std::cout << "signalThread id=" << std::this_thread::get_id() << "\n";
-   std::cout << "Signal received: " << sig << "\n";
    stop = true;
+
+   server.stop();
+   io.stop();
   });
 
-  while (!stop) {
-   std::this_thread::sleep_for(std::chrono::milliseconds(100));
-  }
-
   signalThread.join();
-  std::cout << "main thread id=" << std::this_thread::get_id() << "\n";
+  io_thread.join();
+
   std::cout << "Graceful shutdown\n";
   return 0;
 
