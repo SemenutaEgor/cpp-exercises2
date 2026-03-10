@@ -20,6 +20,11 @@ add_executable(test_service_tcp
 
 target_include_directories(test_service_tcp PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 
+target_compile_definitions(test_service_tcp
+    PRIVATE
+        CALCULATOR_BINARY_PATH="$<TARGET_FILE:calculator>"
+)
+
 target_link_libraries(test_service_tcp
     PRIVATE
         GTest::gtest

@@ -18,4 +18,5 @@ class TcpServer {
   boost::asio::io_context& io_;
   boost::asio::ip::tcp::acceptor acceptor_;
   RequestHandler handler_;
+  bool stopped_{false};
 };

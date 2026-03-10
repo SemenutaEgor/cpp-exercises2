@@ -73,6 +73,9 @@ TcpServer::TcpServer(asio::io_context& io, unsigned short port,
 void TcpServer::start() { do_accept(); }
 
 void TcpServer::stop() {
+  if (stopped_) return;
+
+  stopped_ = true;
   boost::system::error_code ec;
   acceptor_.close(ec);
 }
@@ -80,12 +83,16 @@ void TcpServer::stop() {
 void TcpServer::do_accept() {
   acceptor_.async_accept(
       [this](const boost::system::error_code& ec, tcp::socket socket) {
-        if (!ec) {
-          std::make_shared<Session>(std::move(socket), handler_)->start();
+        if (ec) {
+          if (stopped_ || ec == boost::asio::error::operation_aborted) return;
+
+          if (!stopped_) do_accept();
+
+          return;
         }
 
-        if (acceptor_.is_open()) {
-          do_accept();
-        }
+        std::make_shared<Session>(std::move(socket), handler_)->start();
+
+        if (!stopped_) do_accept();
       });
 }

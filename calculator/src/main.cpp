@@ -14,7 +14,6 @@
 #include "core/Runner.h"
 
 int main(int argc, char* argv[]) {
-  std::atomic_bool stop{false};
 
   sigset_t set;
   sigemptyset(&set);
@@ -65,13 +64,19 @@ int main(int argc, char* argv[]) {
    io.run();
   });
 
+  std::atomic_bool stopping{false};
+
   std::thread signalThread([&](){
    int sig = 0;
-   sigwait(&set, &sig);
-   stop = true;
-
-   server.stop();
-   io.stop();
+   if (sigwait(&set, &sig) == 0) {
+    bool expected = false;
+    if (stopping.compare_exchange_strong(expected, true)) {
+     boost::asio::post(io, [&] {
+      server.stop();
+      io.stop();
+     });
+    }
+   }
   });
 
   signalThread.join();
