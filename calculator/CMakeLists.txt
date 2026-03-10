@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.16)
 project(calculator VERSION 1.0 LANGUAGES  CXX)
 
 find_package(PostgreSQL REQUIRED)
+find_package(Boost REQUIRED)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED  ON)
@@ -57,6 +58,8 @@ target_link_libraries(calculator_core
         mathlib
         nlohmann_json::nlohmann_json
         spdlog::spdlog
+        Boost::boost 
+        pthread
 )
 
 enable_clang_tidy(calculator_core)
@@ -64,6 +67,7 @@ enable_warnings(calculator_core)
 
 add_executable(calculator
     src/main.cpp
+    src/net/TcpServer.cpp
 )
 
 target_link_libraries(calculator

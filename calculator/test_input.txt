@@ -1,0 +1,3 @@
+{"operation":"mul","args":[2,3]}
+
+{"operation":"mul","args":[4,5]}
